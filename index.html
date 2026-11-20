@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14263d">
+<title>Vinod Bike Garage</title>
+<style>
+:root{--navy:#14263d;--blue:#24527a;--bg:#f3f6fa;--line:#dce4ed;--green:#16834a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,"Noto Sans Telugu",sans-serif;background:var(--bg);color:#172334}
+header{background:var(--navy);color:white;padding:20px 16px 16px}header h1{font-size:21px;margin:0 0 4px}header p{margin:0;color:#c9d7e5;font-size:13px}
+nav{display:flex;overflow:auto;background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+nav button{border:0;background:white;padding:13px 15px;white-space:nowrap;color:#42556b;font-weight:600}
+nav button.active{color:#14558b;border-bottom:3px solid #2674b8}
+main{max-width:900px;margin:auto;padding:16px}.panel{display:none}.panel.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card,.box{background:white;border:1px solid var(--line);border-radius:13px;padding:14px}
+.card small{color:#65778b}.card strong{display:block;font-size:24px;margin-top:5px}
+h2{font-size:18px;margin:4px 0 14px}.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd6e2;border-radius:9px;font:inherit;background:white;min-width:0}
+button.primary,.action{background:var(--blue);color:white;border:0;border-radius:9px;padding:11px 14px;font-weight:650}
+button.secondary{background:#e8eef5;color:#23415f;border:0;border-radius:9px;padding:10px 12px}
+button.danger{background:#a83232;color:white;border:0;border-radius:8px;padding:7px 10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.tablewrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:560px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);font-size:13px}th{background:#f6f8fb;color:#53677d}
+.muted{color:#65778b;font-size:13px}.full{grid-column:1/-1}.empty{padding:20px;text-align:center;color:#718096}
+label{font-size:12px;color:#52657a;display:block;margin-bottom:4px}
+@media(max-width:520px){main{padding:12px}.form{grid-template-columns:1fr}.cards{gap:8px}.card{padding:12px}}
+</style></head>
+<body>
+<header><h1>🏍️ VINOD BIKE GARAGE</h1><p>Garage Management • Stock • Billing</p></header>
+<nav>
+<button class="active" data-tab="home">Dashboard</button><button data-tab="stock">Stock</button><button data-tab="customers">Customers</button><button data-tab="bills">Bills</button><button data-tab="backup">Backup</button>
+</nav>
+<main>
+<section id="home" class="panel active">
+<h2>Dashboard</h2>
+<div class="cards">
+<div class="card"><small>మొత్తం Stock Items</small><strong id="dashItems">0</strong></div>
+<div class="card"><small>మిగిలిన Quantity</small><strong id="dashQty">0</strong></div>
+<div class="card"><small>మొత్తం Bills</small><strong id="dashBills">0</strong></div>
+<div class="card"><small>మొత్తం అమ్మకాలు</small><strong id="dashSales">₹0</strong></div>
+</div><p class="muted">ఈ డేటా ఈ మొబైల్ బ్రౌజర్‌లో సేవ్ అవుతుంది. తరచూ Backup తీసుకోండి.</p>
+</section>
+<section id="stock" class="panel">
+<h2>Spare Parts Stock</h2>
+<div class="box">
+<div class="form">
+<div><label>Item పేరు</label><input id="itemName" placeholder="ఉదా: Engine Oil"></div>
+<div><label>వచ్చిన Quantity</label><input id="itemQty" type="number" min="1" placeholder="ఉదా: 10"></div>
+<div><label>కొనుగోలు ధర (ఒక్కటి)</label><input id="itemCost" type="number" min="0" placeholder="₹"></div>
+<div><label>అమ్మకం ధర (ఒక్కటి)</label><input id="itemPrice" type="number" min="0" placeholder="₹"></div>
+</div><button class="primary" onclick="addItem()">+ Add Stock</button>
+</div><div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Item</th><th>వచ్చినవి</th><th>వాడినవి/అమ్మినవి</th><th>మిగిలినవి</th><th>ధర</th><th>Action</th></tr></thead><tbody id="stockRows"></tbody></table></div>
+</section>
+<section id="customers" class="panel">
+<h2>Customer Details</h2><div class="box">
+<div class="form"><div><label>Customer పేరు</label><input id="custName" placeholder="పేరు"></div><div><label>Phone Number</label><input id="custPhone" inputmode="tel" placeholder="ఫోన్ నంబర్"></div><div><label>Bike Model</label><input id="custBike" placeholder="ఉదా: TVS Radeon"></div><div><label>Vehicle Number</label><input id="custVehicle" placeholder="వాహన నంబర్"></div></div>
+<button class="primary" onclick="addCustomer()">+ Add Customer</button></div>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>పేరు</th><th>ఫోన్</th><th>Bike</th><th>Vehicle No.</th></tr></thead><tbody id="customerRows"></tbody></table></div>
+</section>
+<section id="bills" class="panel">
+<h2>Customer Bill</h2><div class="box">
+<div class="form"><div><label>Customer పేరు</label><input id="billCustomer" placeholder="కస్టమర్ పేరు"></div><div><label>Vehicle Number</label><input id="billVehicle" placeholder="వాహన నంబర్"></div><div><label>Spare Part (ఐచ్చికం)</label><select id="billItem"><option value="">Part ఎంచుకోండి</option></select></div><div><label>Quantity</label><input id="billQty" type="number" min="1" value="1"></div><div><label>Labour Charges</label><input id="labour" type="number" min="0" value="0"></div><div><label>Payment</label><select id="billPayment"><option>Paid</option><option>Pending</option></select></div></div>
+<p class="muted">Part ఎంచుకుంటే దాని అమ్మకం ధర ఆటోమేటిక్‌గా లెక్కలోకి వస్తుంది.</p>
+<button class="primary" onclick="createBill()">Generate Bill</button></div>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Date</th><th>Customer</th><th>Vehicle</th><th>Part / Labour</th><th>Total</th><th>Payment</th></tr></thead><tbody id="billRows"></tbody></table></div>
+</section>
+<section id="backup" class="panel">
+<h2>Google Drive Backup</h2><div class="box">
+<p>ముందుగా Backup JSON ఫైల్‌ను డౌన్‌లోడ్ చేయండి. ఆ ఫైల్‌ను Google Driveలో upload చేసుకోవచ్చు. కొత్త మొబైల్‌లో Restore చేయడానికి ఆ ఫైల్‌ను ఎంచుకోండి.</p>
+<div class="actions"><button class="primary" onclick="downloadBackup()">⬇ Download Backup</button><button class="secondary" onclick="document.getElementById('restoreFile').click()">Restore Backup</button><input id="restoreFile" type="file" accept="application/json,.json" hidden onchange="restoreBackup(event)"></div>
+<p class="muted">గమనిక: ఇది Google Driveకు ఆటోమేటిక్‌గా కనెక్ట్ కాదు. Google Driveలో ఫైల్‌ను మీరే upload/download చేయాలి. ఆటోమేటిక్ Drive Sync కోసం ప్రత్యేక Google sign-in మరియు API integration అవసరం.</p>
+</div></section>
+</main>
+<script>
+const KEY='vinodGarageDataV1';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"items":[],"customers":[],"bills":[]}');
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}
+function addItem(){
+ let name=itemName.value.trim(),qty=Number(itemQty.value),cost=Number(itemCost.value||0),price=Number(itemPrice.value||0);
+ if(!name||qty<1)return alert('Item పేరు మరియు Quantity నమోదు చేయండి');
+ let old=db.items.find(x=>x.name.toLowerCase()===name.toLowerCase());
+ if(old){old.total+=qty;old.remaining+=qty;old.cost=cost;old.price=price}else db.items.push({id:Date.now(),name,total:qty,used:0,remaining:qty,cost,price});
+ itemName.value=itemQty.value=itemCost.value=itemPrice.value='';save()
+}
+function addCustomer(){
+ let name=custName.value.trim();if(!name)return alert('Customer పేరు నమోదు చేయండి');
+ db.customers.push({name,phone:custPhone.value,bike:custBike.value,vehicle:custVehicle.value});
+ custName.value=custPhone.value=custBike.value=custVehicle.value='';save()
+}
+function createBill(){
+ let customer=billCustomer.value.trim();if(!customer)return alert('Customer పేరు నమోదు చేయండి');
+ let item=db.items.find(x=>String(x.id)===billItem.value),qty=Number(billQty.value||1);
+ if(item&&(!Number.isInteger(qty)||qty<1||qty>item.remaining))return alert('Stock సరిపోవడం లేదు');
+ let partTotal=item?item.price*qty:0,lab=Number(labour.value||0),total=partTotal+lab;
+ if(item){item.remaining-=qty;item.used+=qty}
+ db.bills.unshift({date:new Date().toLocaleDateString('en-IN'),customer,vehicle:billVehicle.value,description:(item?item.name+' × '+qty:'No Part')+' + Labour',total,payment:billPayment.value});
+ billCustomer.value=billVehicle.value='';billItem.value='';billQty.value=1;labour.value=0;save();alert('Bill తయారైంది: '+money(total))
+}
+function render(){
+ stockRows.innerHTML=db.items.length?db.items.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.total}</td><td>${x.used}</td><td>${x.remaining}</td><td>${money(x.price)}</td><td><button class="secondary" onclick="useStock(${x.id})">Stock Out</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">ఇంకా Items లేవు</td></tr>';
+ customerRows.innerHTML=db.customers.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.bike)}</td><td>${esc(x.vehicle)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Customers లేరు</td></tr>';
+ billRows.innerHTML=db.bills.map(x=>`<tr><td>${x.date}</td><td>${esc(x.customer)}</td><td>${esc(x.vehicle)}</td><td>${esc(x.description)}</td><td>${money(x.total)}</td><td>${x.payment}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">Bills లేవు</td></tr>';
+ billItem.innerHTML='<option value="">Part ఎంచుకోండి</option>'+db.items.filter(x=>x.remaining>0).map(x=>`<option value="${x.id}">${esc(x.name)} — ${money(x.price)} (Stock ${x.remaining})</option>`).join('');
+ dashItems.textContent=db.items.length;dashQty.textContent=db.items.reduce((s,x)=>s+x.remaining,0);dashBills.textContent=db.bills.length;dashSales.textContent=money(db.bills.reduce((s,x)=>s+x.total,0));
+}
+function useStock(id){let x=db.items.find(y=>y.id===id);if(!x||x.remaining<1)return alert('Stock లేదు');let n=Number(prompt(x.name+' ఎంత Quantity వాడారు/అమ్మారు?',1));if(!Number.isInteger(n)||n<1||n>x.remaining)return alert('సరైన Quantity ఇవ్వండి');x.remaining-=n;x.used+=n;save()}
+function downloadBackup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Vinod-Bike-Garage-Backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+function restoreBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.items)||!Array.isArray(d.customers)||!Array.isArray(d.bills))throw 0;if(confirm('ప్రస్తుత డేటా స్థానంలో Backup డేటా పెట్టాలా?')){db=d;save();alert('Restore పూర్తయింది')}}catch(_){alert('ఈ Backup ఫైల్ సరైనది కాదు')}e.target.value=''};r.readAsText(f)}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')});
+render();
+</script></body></html>
