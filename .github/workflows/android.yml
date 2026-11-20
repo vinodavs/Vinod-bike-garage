@@ -18,7 +18,7 @@ jobs:
       - name: Extract Android Project
         run: |
           unzip -q VinodBikeGarage_AndroidStudio_Project.zip -d extracted
-          cp -R extracted/VinodBikeGarage/. .
+          cp -R extracted/VinodBikeGarageAndroid/. .
 
       - name: Setup Java
         uses: actions/setup-java@v4
